@@ -1,0 +1,43 @@
+plugins {
+ id 'java'
+}
+
+group 'org.analog_vortices'
+version '0.0.1'
+
+final String MAIN_CLASS = 'org.analog_vortices.life_itself.Main';
+
+sourceCompatibility = targetCompatibility = 1.8
+
+sourceSets {
+ main {
+  java.srcDirs = ['src/']
+  //resources.srcDirs = ['src/java/life_itself/res']
+ }
+}
+
+repositories {
+ mavenCentral()
+}
+
+dependencies {
+ compile 'org.java-websocket:Java-WebSocket:1.4.0'
+ compile 'org.processing:core:3.3.7'
+}
+
+jar {
+ from {
+  configurations.compile.collect {
+   it.isDirectory() ? it : zipTree(it)
+  }
+ }
+ from sourceSets.main.output
+ manifest.attributes('Main-Class' : MAIN_CLASS)
+}
+
+task run(type: JavaExec, dependsOn: jar) {
+ standardOutput = System.out
+ errorOutput = System.err
+ classpath = files(jar.outputs.files.getAt(0))
+ main = MAIN_CLASS
+}
